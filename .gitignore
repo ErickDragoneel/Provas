@@ -1,0 +1,5 @@
+venv/
+__pycache__/
+.env
+prova.pdf
+prova_*.txt

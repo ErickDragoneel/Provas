@@ -1,38 +1,40 @@
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-import os
 
-def criar_pdf(perguntas, materia, serie, tema):
-    caminho = "/tmp/prova.pdf"
-    if os.name == "nt":
-        caminho = "prova.pdf"
-    
-    c = canvas.Canvas(caminho, pagesize=A4)
-    width, height = A4
-    
-    y = height - 50
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(50, y, f"PROVA - {materia.upper()} - {serie}")
-    y -= 20
-    c.setFont("Helvetica", 12)
-    c.drawString(50, y, f"Tema: {tema}")
-    y -= 40
-    
-    c.setFont("Helvetica", 11)
-    for i, q in enumerate(perguntas, 1):
-        if y < 100:
-            c.showPage()
-            y = height - 50
-            c.setFont("Helvetica", 11)
-        
-        texto_pergunta = q.get("pergunta", str(q))
-        c.drawString(50, y, f"{i}. {texto_pergunta[:90]}")
+def gerar_pdf(texto, gabarito, nome_arquivo):
+    pdf = canvas.Canvas(nome_arquivo, pagesize=letter)
+    largura, altura = letter
+
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(220, altura - 50, "PROVA")
+
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(50, altura - 80, "Nome: ____________________________")
+    pdf.drawString(350, altura - 80, "Data: ____/____/______")
+
+    y = altura - 120
+
+    pdf.setFont("Helvetica", 11)
+
+    for linha in texto.split("\n"):
+        pdf.drawString(50, y, linha)
         y -= 15
-        
-        for alt in q.get("alternativas", []):
-            c.drawString(70, y, str(alt)[:85])
-            y -= 15
-        y -= 10
-    
-    c.save()
-    return caminho
+
+        if y < 50:
+            pdf.showPage()
+            pdf.setFont("Helvetica", 11)
+            y = altura - 50
+
+    pdf.showPage()
+
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(200, altura - 50, "GABARITO")
+
+    pdf.setFont("Helvetica", 12)
+    y = altura - 100
+
+    for i, resposta in enumerate(gabarito, start=1):
+        pdf.drawString(50, y, f"{i} - {resposta}")
+        y -= 20
+
+    pdf.save()
