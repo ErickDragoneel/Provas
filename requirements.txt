@@ -1,5 +1,4 @@
 fastapi
 uvicorn
-openai
 fpdf2
 python-multipart
